@@ -147,7 +147,7 @@ const translations = {
 };
 
 export default function App() {
-  const [heroImage, setHeroImage] = useState<string | null>("2.png");
+  const [heroImage, setHeroImage] = useState<string | null>("src/lib/2.png");
   const [activeWatchFace, setActiveWatchFace] = useState(0);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [lang, setLang] = useState<Language>('en');
