@@ -540,7 +540,7 @@ export default function App() {
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setIsWatchFilmOpen(false)} className="absolute inset-0 bg-bg/95 backdrop-blur-xl" />
             <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }} className="relative z-10 w-full max-w-5xl aspect-video rounded-3xl overflow-hidden shadow-[0_0_100px_rgba(0,255,255,0.2)]">
               <button onClick={() => setIsWatchFilmOpen(false)} className="absolute top-6 right-6 z-20 p-3 bg-black/50 hover:bg-black/80 rounded-full text-white transition-colors"><X /></button>
-              <iframe className="w-full h-full" src="https://vimeo.com/1180121847?share=copy&fl=sv&fe=ci" title={t.watchFilmTitle} frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
+              <iframe className="w-full h-full" src="https://player.vimeo.com/video/1180121847" title={t.watchFilmTitle} frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
             </motion.div>
           </div>
         )}
