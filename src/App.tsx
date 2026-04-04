@@ -147,7 +147,7 @@ const translations = {
 };
 
 export default function App() {
-  const [heroImage, setHeroImage] = useState<string | null>("https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&q=80&w=1000");
+  const [heroImage, setHeroImage] = useState<string | null>("2");
   const [activeWatchFace, setActiveWatchFace] = useState(0);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [lang, setLang] = useState<Language>('en');
