@@ -872,7 +872,7 @@ export default function App() {
           >
             <div className="absolute inset-0 bg-accent/20 blur-[100px] rounded-full group-hover:bg-accent/30 transition-colors" />
             <motion.img 
-              src={heroImage || "2"} 
+              src={heroImage || "./2"} 
               alt="AeroPulse X"
               className={cn(
                 "relative z-10 w-full drop-shadow-[0_0_50px_rgba(0,255,255,0.2)]",
