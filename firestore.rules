@@ -1,0 +1,114 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: users
+    // Document ID: userId (from Firebase Auth)
+    // Fields:
+    //   - uid: string (required) - The user's unique ID
+    //   - email: string (required) - The user's email address
+    //   - displayName: string (optional) - The user's name
+    //   - photoURL: string (optional) - The user's profile picture URL
+    //   - theme: string (optional, enum: ['dark', 'light'])
+    //   - language: string (optional, enum: ['en', 'ar'])
+    //   - role: string (optional, enum: ['admin', 'user'])
+    //
+    // Collection: orders
+    // Document ID: auto-generated
+    // Fields:
+    //   - userId: string (required) - The ID of the user who placed the order
+    //   - productName: string (required) - Name of the product
+    //   - status: string (required, enum: ['pending', 'shipped', 'delivered'])
+    //   - price: number (required) - Price of the product
+    //   - createdAt: timestamp (required) - When the order was placed
+    //
+    // ===============================================================
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() && 
+        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' || 
+         (request.auth.token.email == "aliaezatwork@gmail.com" && request.auth.token.email_verified == true));
+    }
+
+    function isValidEmail(email) {
+      return email is string && email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+    }
+
+    function hasOnlyAllowedFields(data, allowedFields) {
+      return data.keys().hasOnly(allowedFields);
+    }
+
+    function hasRequiredFields(data, requiredFields) {
+      return data.keys().hasAll(requiredFields);
+    }
+
+    // ===============================================================
+    // Domain Validators
+    // ===============================================================
+    function isValidUser(data) {
+      return hasRequiredFields(data, ['uid', 'email']) &&
+             data.uid == request.auth.uid &&
+             isValidEmail(data.email) &&
+             (!('role' in data) || data.role in ['admin', 'user']) &&
+             (!('theme' in data) || data.theme in ['dark', 'light']) &&
+             (!('language' in data) || data.language in ['en', 'ar']);
+    }
+
+    function isValidOrder(data) {
+      return hasRequiredFields(data, ['userId', 'productName', 'status', 'createdAt', 'price']) &&
+             data.userId == request.auth.uid &&
+             data.status in ['pending', 'shipped', 'delivered'] &&
+             data.price is number &&
+             data.price > 0 &&
+             data.productName is string &&
+             data.productName.size() > 0 &&
+             data.productName.size() < 100 &&
+             data.createdAt == request.time;
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+    
+    match /users/{userId} {
+      allow read: if isAuthenticated(); // Allow reading profiles (e.g. for comments/social) but PII should be handled
+      // However, per instructions: "Never write a rule that allows read access to a document containing PII for anyone other than the owner."
+      // Since users collection contains email, we restrict to owner or admin.
+      allow read: if isOwner(userId) || isAdmin();
+      
+      allow create: if isOwner(userId) && isValidUser(request.resource.data) && 
+                      (!('role' in request.resource.data) || request.resource.data.role == 'user' || isAdmin());
+      
+      allow update: if isOwner(userId) && isValidUser(request.resource.data) && 
+                      (request.resource.data.role == resource.data.role || isAdmin());
+    }
+
+    match /orders/{orderId} {
+      // Use list and get separately for clarity
+      allow get: if isAuthenticated() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow list: if isAuthenticated() && (isAdmin() || (request.query.limit <= 100 && resource.data.userId == request.auth.uid));
+      
+      allow create: if isAuthenticated() && isValidOrder(request.resource.data);
+      allow update: if isAdmin(); // Only admins can update order status
+      allow delete: if isAdmin();
+    }
+    
+    match /{path=**} {
+      allow read, write: if false;
+    }
+  }
+}

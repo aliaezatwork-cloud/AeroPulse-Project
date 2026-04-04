@@ -1,0 +1,41 @@
+{
+  "entities": {
+    "User": {
+      "title": "User Profile",
+      "description": "Stores user profile information and preferences.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "displayName": { "type": "string" },
+        "email": { "type": "string" },
+        "photoURL": { "type": "string" },
+        "theme": { "type": "string", "enum": ["dark", "light"] },
+        "language": { "type": "string", "enum": ["en", "ar"] }
+      },
+      "required": ["uid", "email"]
+    },
+    "Order": {
+      "title": "Order",
+      "description": "Represents a purchase of an AeroPulse X watch.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "productName": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "shipped", "delivered"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "price": { "type": "number" }
+      },
+      "required": ["userId", "productName", "status", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User profile document."
+    },
+    "/orders/{orderId}": {
+      "schema": "Order",
+      "description": "Individual order document."
+    }
+  }
+}
