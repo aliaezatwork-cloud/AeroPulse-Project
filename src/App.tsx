@@ -147,7 +147,7 @@ const translations = {
 };
 
 export default function App() {
-  const [heroImage, setHeroImage] = useState<string | null>("https://raw.githubusercontent.com/aliaezatwork-cloud/AeroPulse-Project/refs/heads/main/public/hero.png");
+  const [heroImage, setHeroImage] = useState<string | null>("https://i.ibb.co/ht4Wbqj/image.png");
   const [activeWatchFace, setActiveWatchFace] = useState(0);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [lang, setLang] = useState<Language>('en');
@@ -181,13 +181,6 @@ export default function App() {
     { ...t.watchFaces[2], color: 'text-white', bg: 'bg-white/10', icon: Shield, value: '00' },
     { ...t.watchFaces[3], color: 'text-yellow-400', bg: 'bg-yellow-400/10', icon: Battery, value: '98%' },
   ];
-
-  useEffect(() => {
-    const fetchImage = async () => {
-      const img = await generateWatchImage();
-      setHeroImage(img);
-    };
-    fetchImage();
 
     const unsubscribe = onAuthStateChanged(auth, (currentUser: any) => {
       setUser(currentUser);
