@@ -182,6 +182,7 @@ export default function App() {
     { ...t.watchFaces[3], color: 'text-yellow-400', bg: 'bg-yellow-400/10', icon: Battery, value: '98%' },
   ];
 
+    useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser: any) => {
       setUser(currentUser);
       if (currentUser) {
@@ -190,7 +191,6 @@ export default function App() {
         const unsubUser = onSnapshot(userDocRef, (docSnap: any) => {
           if (docSnap.exists()) {
             const userData = docSnap.data();
-            // Merge auth user with firestore data for UI
             setUser({
               ...currentUser,
               displayName: userData.displayName || currentUser.displayName,
@@ -208,6 +208,7 @@ export default function App() {
         const unsubOrders = onSnapshot(q, (snapshot: any) => {
           setOrders(snapshot.docs.map((doc: any) => ({ id: doc.id, ...doc.data() })));
         });
+
         return () => {
           unsubUser();
           unsubOrders();
